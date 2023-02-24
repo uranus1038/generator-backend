@@ -6,5 +6,4 @@ const UMIQuery = mysql.createPool({
     password: password,
     database: database
   }).promise();
-
   module.exports = UMIQuery;
