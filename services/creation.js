@@ -8,59 +8,45 @@ server.use(express.urlencoded({ extended: false }));
 
 //db config
 const UMIQuery = require('../config/UMIDatabase.umi.js');
-//login user
-const verify_email = server.post("/verify-email", (req, res) => {
-    const { data } = req.body
-    console.log(data);
-    UMIQuery.query("SELECT * FROM accouts WHERE email = ? ", [data]).then(
-        ([result]) => {
-            if (result.length === 1)
-                res.send({ statusMessage: "ok" })
-            else if(result.length === 0)
-                res.send({ statusMessage: "none" })
-        }
-    )
-});
-const verify_namestar = server.post("/verify-namestar", (req, res) => {
-    const { data } = req.body
-    console.log(data);
-    UMIQuery.query("SELECT * FROM accouts WHERE nametag = ? ", [data]).then(
-        ([result]) => {
-            if (result.length === 1)
-                res.send({ statusMessage: "ok" })
-            else if(result.length === 0)
-                res.send({ statusMessage: "none" })
-        }
-    )
-});
-const verify_userstar = server.post("/verify-userstar", (req, res) => {
-    const { data } = req.body
-    console.log(data);
-    UMIQuery.query("SELECT * FROM accouts WHERE userName = ? ", [data]).then(
-        ([result]) => {
-            if (result.length === 1)
-                res.send({ statusMessage: "ok" })
-            else if(result.length === 0)
-                res.send({ statusMessage: "none" })
-        }
-    )
-});
+//random number
+function generateRandomNumber() {
+    return Math.floor(Math.random() * 9999) + 1;
+}
 //submit creation
-const submit= server.post("/submit", (req, res) => {
+const submit= server.post("/submit", async (req, res) => {
     const { email , nametag , userName , passWord , birthday , gender  } = req.body
-    UMIQuery.query("SELECT accouts FROM accouts WHERE email = ? ", [email]).then(([result])=>
+    const accout = "member";
+    const  date = new Date();
+    const name = `${nametag}#${generateRandomNumber()}`
+    const passHash =  bcrypt.hashSync(passWord,10);
+    await UMIQuery.query("SELECT email FROM accouts WHERE email = ? ", [email]).then(([result])=>
         {
             if(result.length === 1)
             {
-                res.send({status:"ok"});
+                res.send({status:"email-active"});
             }else if(result.length === 0)
             {
-                res.send({status:"none"});
+                UMIQuery.query("SELECT * FROM accouts WHERE userName = ? ", [userName]).then(([result])=>
+                {
+                    if(result.length === 1)
+                    {
+                        res.send({status:"name-active"});
+                    }
+                    if(result.length === 0)
+                    {
+                        UMIQuery.query("INSERT INTO accouts (email ,userName , passWord , birthday , gender ,date ,nametag ,accout) VALUES (?,?,?,?,?,?,?,?) ",
+                         [email,userName ,passHash ,birthday,gender,date,name,accout ]).then(([result])=>{
+
+                        }).then(()=>
+                        {
+                            res.send({status:"successed"});
+                        })
+                    }
+
+                })
+                
             }
         })
 });
 
-module.exports = verify_email; 
-module.exports = verify_namestar; 
-module.exports = verify_userstar; 
 module.exports = submit; 
