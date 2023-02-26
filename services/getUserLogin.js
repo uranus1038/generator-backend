@@ -7,14 +7,12 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 //db config
-const UMIQuery = require('../config/UMIDatabase.umi');
+const UMIQuery = require('../config/UMIDatabase.umi.js');
 //login user
 const getUser = server.post("/getUser-generator", (req, res) => {
     const {userName   , QUk8sYq_x} = req.body ;
     const passWord = QUk8sYq_x ;
-    UMIQuery.query
-    console.log(userName);
-    res.send({"message" : "API Successed"})  
+        res.send({"message" : "API Successed"})  
 });
 
 module.exports = getUser; 
