@@ -23,14 +23,14 @@ const submit= server.post("/submit", async (req, res) => {
         {
             if(result.length === 1)
             {
-                res.send({status:"email-active"});
+                return res.send({status:"email-active"});
             }else if(result.length === 0)
             {
                 UMIQuery.query("SELECT * FROM accouts WHERE userName = ? ", [userName]).then(([result])=>
                 {
                     if(result.length === 1)
                     {
-                        res.send({status:"name-active"});
+                        return res.send({status:"name-active"});
                     }
                     if(result.length === 0)
                     {
@@ -39,7 +39,7 @@ const submit= server.post("/submit", async (req, res) => {
 
                         }).then(()=>
                         {
-                            res.send({status:"successed"});
+                            return res.send({status:"successed"});
                         })
                     }
 
